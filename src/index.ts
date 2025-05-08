@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import routes from './routes';
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ app.use(express.json());
 app.get('/', (req: Request, res: Response) => {
   res.send('Bienvenue sur l\'API PepiGameLog !');
 });
+
+app.use('/api', routes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
