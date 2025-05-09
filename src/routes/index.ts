@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import authRouter from './auth';
 import gamesRouter from './game';
+import libraryRouter from './library';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.use('/auth', authRouter);
 
 router.use('/games', gamesRouter);
 
-//router.use('/library')
+router.use('/library', libraryRouter)
 
 //router.use('/wishlist')
 

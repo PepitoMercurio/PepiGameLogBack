@@ -66,12 +66,12 @@ model games_to_platforms {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model library {
   id          BigInt     @id @default(autoincrement())
-  user_id     BigInt?
-  game_id     BigInt?
+  user_id     BigInt
+  game_id     BigInt
   platform_id BigInt?
-  games       games?     @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  games       games     @relation(fields: [game_id], references: [id], onDelete: Cascade)
   platforms   platforms? @relation(fields: [platform_id], references: [id], onDelete: SetDefault)
-  users       users?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

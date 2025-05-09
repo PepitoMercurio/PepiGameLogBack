@@ -9,8 +9,15 @@ const gameController = {
     getGame: async (req: Request, res: Response) => {
         try {
             const games = await prisma.games.findMany();
+
+            const formattedGames = games.map(game => ({
+                ...game,
+                id: parseInt(game.id.toString()),
+                parent_game: game.parent_game ? parseInt(game.parent_game.toString()) : null,
+            }));
+
             return res.status(200).json({
-              games: games,
+              games: formattedGames
             });
         } catch (error) {
             console.error('Error during getting the game list:', error);
