@@ -110,15 +110,15 @@ const gameController = {
         }
     },
 
-    countGames: async (req: Request, res: Response) => {
-        try {
-            const count = await prisma.games.count();
-            res.status(200).json({ count });
-        } catch (error) {
-            console.error('Error during counting games:', error);
-            return res.status(500).json({ message: 'Internal server error' });
-        }
-    }
+    // countGames: async (req: Request, res: Response) => {
+    //     try {
+    //         const count = await prisma.games.count();
+    //         res.status(200).json({ count });
+    //     } catch (error) {
+    //         console.error('Error during counting games:', error);
+    //         return res.status(500).json({ message: 'Internal server error' });
+    //     }
+    // }
 }
 
 export default gameController

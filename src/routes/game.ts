@@ -45,12 +45,4 @@ gamesRouter.delete('/delete/:id', async (req: Request, res: Response) => {
     }
 });
 
-gamesRouter.get('/count', async (req: Request, res: Response) => {
-    try {
-        await gameController.countGames(req, res); 
-    } catch (error: any) {
-        res.status(500).send(error.message);
-    }
-});
-
 export default gamesRouter;

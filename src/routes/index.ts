@@ -4,6 +4,7 @@ import gamesRouter from './game';
 import libraryRouter from './library';
 import wishlistRouter from './wishlist';
 import ratingRouter from './rating';
+import dashboardRouter from './dashboard';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.use('/wishlist', wishlistRouter)
 
 router.use('/rating', ratingRouter)
 
-//router.use('/dashboard')
+router.use('/dashboard', dashboardRouter)
 
 
 

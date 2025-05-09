@@ -27,4 +27,12 @@ libraryRouter.delete('/delete', async (req: Request, res: Response) => {
     }
 })
 
+libraryRouter.put('/update/:id', async (req: Request, res: Response) => {
+    try {
+        await libraryController.updateLibrary(req, res);
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    }
+})
+
 export default libraryRouter;
