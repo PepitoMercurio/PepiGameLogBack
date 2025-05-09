@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { Prisma, PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
-import { da } from '@faker-js/faker/.';
 
 const prisma = new PrismaClient();
 dotenv.config();
