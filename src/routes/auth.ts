@@ -21,9 +21,4 @@ authRouter.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-// Test
-authRouter.get('/test', (req: Request, res: Response) => {
-    res.status(200).json({ statut: 'ok' });
-});
-
 export default authRouter;

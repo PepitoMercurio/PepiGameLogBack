@@ -68,29 +68,54 @@ const authController = {
   },
 
   login: async (req: Request, res: Response) => {
-  const data = req.body;
+    const data = req.body;
 
-  try {
-    const user = await prisma.users.findUnique({
-      where: { email: data.email },
-    });
+    try {
+      const user = await prisma.users.findUnique({
+        where: { email: data.email },
+      });
 
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
+      if (!user) {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
 
-    // Connexion locale avec mot de passe
-    if (user.provider === "local") {
-      if (user.password && data.password) {
+      // Connexion locale avec mot de passe
+      if (user.provider === "local") {
+        if (user.password && data.password) {
 
-        const validPassword = await bcrypt.compare(data.password, user.password);
-        if (validPassword) {
+          const validPassword = await bcrypt.compare(data.password, user.password);
+          if (validPassword) {
+
+            const userForToken = {
+              id: user.id.toString(),
+              username: user.username,
+              email: user.email
+            }
+
+            const token = await GenerateWebToken(userForToken)
+
+            return res.status(200).json({
+              message: 'Login successful',
+              token: token,
+            });
+
+          } else {
+            return res.status(401).json({ message: 'Invalid email or password' });
+          }
+        } else {
+          return res.status(400).json({ message: 'Password required' });
+        }
+      }
+
+      // Connexion via Google ou autre provider
+      if (user.provider !== "local") {
+        if (user.provider_id && user.provider_id === data.provider_id) {
 
           const userForToken = {
-            id: user.id.toString(),
-            username: user.username,
-            email: user.email
-          }
+              id: user.id.toString(),
+              username: user.username,
+              email: user.email
+            }
 
           const token = await GenerateWebToken(userForToken)
 
@@ -98,44 +123,18 @@ const authController = {
             message: 'Login successful',
             token: token,
           });
-
         } else {
-          return res.status(401).json({ message: 'Invalid email or password' });
+          return res.status(401).json({ message: 'Invalid provider ID' });
         }
-      } else {
-        return res.status(400).json({ message: 'Password required' });
       }
+
+      return res.status(401).json({ message: 'Login failed' });
+
+    } catch (error) {
+      console.error('Error during login:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-
-    // Connexion via Google ou autre provider
-    if (user.provider !== "local") {
-      if (user.provider_id && user.provider_id === data.provider_id) {
-
-        const userForToken = {
-            id: user.id.toString(),
-            username: user.username,
-            email: user.email
-          }
-
-        const token = await GenerateWebToken(userForToken)
-
-        return res.status(200).json({
-          message: 'Login successful',
-          token: token,
-        });
-      } else {
-        return res.status(401).json({ message: 'Invalid provider ID' });
-      }
-    }
-
-    return res.status(401).json({ message: 'Login failed' });
-
-  } catch (error) {
-    console.error('Error during login:', error);
-    return res.status(500).json({ message: 'Internal server error' });
   }
-}
-
 }
 
 
