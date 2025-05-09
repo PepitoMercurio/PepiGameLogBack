@@ -12,7 +12,7 @@ const libraryController = {
         try {
             const library = await prisma.library.findMany({
                 where: {
-                    user_id: user_id 
+                    user_id: user_id
                 }
             });
             return res.status(200).json({
