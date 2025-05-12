@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model age_rating {
+  id                 BigInt               @id @default(autoincrement())
+  organisation       String?
+  category           String?
+  cover_url          String?
+  game_to_age_rating game_to_age_rating[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model constructor {
+  id                                           BigInt      @id @default(autoincrement())
+  name                                         String?
+  log_url                                      String?
+  platforms_platforms_constructorToconstructor platforms[] @relation("platforms_constructorToconstructor")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model game_to_age_rating {
+  id            BigInt     @id(map: "game_to_rating_pkey") @default(autoincrement())
+  game_id       BigInt
+  age_rating_id BigInt
+  age_rating    age_rating @relation(fields: [age_rating_id], references: [id], onDelete: Cascade)
+  games         games      @relation(fields: [game_id], references: [id], onDelete: Cascade, map: "game_to_rating_game_id_fkey")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model games {
+  id                 BigInt               @id @default(autoincrement())
+  name               String
+  key_word           String[]
+  cover_url          String?
+  created_at         DateTime?            @db.Date
+  storyline          String?
+  summary            String?
+  parent_game        BigInt?
+  game_to_age_rating game_to_age_rating[]
+  games_to_platforms games_to_platforms[]
+  library            library[]
+  rating             rating[]
+  wishlist           wishlist[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model games_to_platforms {
+  id          BigInt    @id @default(autoincrement())
+  game_id     BigInt
+  platform_id BigInt
+  url         String?
+  games       games     @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  platforms   platforms @relation(fields: [platform_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model library {
+  id          BigInt     @id @default(autoincrement())
+  user_id     BigInt
+  game_id     BigInt
+  platform_id BigInt?
+  games       games     @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  platforms   platforms? @relation(fields: [platform_id], references: [id], onDelete: SetDefault)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model platforms {
+  id                                             BigInt               @id @default(autoincrement())
+  name                                           String?
+  constructor                                    BigInt?
+  logo_url                                       String?
+  games_to_platforms                             games_to_platforms[]
+  library                                        library[]
+  constructor_platforms_constructorToconstructor constructor?         @relation("platforms_constructorToconstructor", fields: [constructor], references: [id], onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model rating {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  user_id    BigInt
+  game_id    BigInt
+  rate       Decimal  @db.Decimal
+  comment    String?
+  games      games    @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id          BigInt     @id @default(autoincrement())
+  username    String
+  picture     String?
+  email       String     @unique
+  provider    String     @default("local")
+  provider_id String?
+  password    String?
+  created_at  DateTime   @default(now()) @db.Timestamptz(6)
+  role        Int        @default(0) @db.SmallInt
+  library     library[]
+  rating      rating[]
+  wishlist    wishlist[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model wishlist {
+  id      BigInt @id @default(autoincrement())
+  user_id BigInt
+  game_id BigInt
+  games   games  @relation(fields: [game_id], references: [id], onDelete: Cascade)
+  users   users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
