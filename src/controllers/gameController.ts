@@ -33,6 +33,13 @@ const gameController = {
                 where: {
                     id: id,
                 },
+                include: {
+                rating: {
+                    include: {
+                        users: true,
+                    }
+                },
+            },
             });
 
             if (!game) {
@@ -40,10 +47,18 @@ const gameController = {
             }
 
             const gameJson = {
-                ...game,
-                id: parseInt(game.id.toString()),
-                parent_game: game.parent_game ? game.parent_game.toString() : null,
-            };
+            ...game,
+            id: Number(game.id),
+            parent_game: game.parent_game ? Number(game.parent_game) : null,
+            rating: game.rating.map(r => ({
+                rate: Number(r.rate), 
+                comment: r.comment,
+                user: r.users ? {
+                    id: Number(r.users.id),
+                    username: r.users.username,
+                } : null,
+            })),
+        };
 
             return res.status(200).json(gameJson);
         } catch (error) {

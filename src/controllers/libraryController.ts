@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Prisma, PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
+import { writeToString } from '@fast-csv/format';
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -20,6 +21,44 @@ const libraryController = {
             });
         } catch (error) {
             console.error('Error during getting user\'s library:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+
+    downloadLibraryAsCSV: async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.user_id);
+
+        try {
+            const userLibrary = await prisma.library.findMany({
+                where: {
+                    user_id: user_id,
+                },
+                include: {
+                    games: true,
+                },
+                take: 5,
+            });
+
+            if (userLibrary.length === 0) {
+                return res.status(404).json({ message: 'No games found for this user' });
+            }
+
+            const games = userLibrary
+                .map(entry => entry.games)
+                .filter((game): game is NonNullable<typeof game> => game !== null);
+
+            if (games.length === 0) {
+                return res.status(404).json({ message: 'No valid game data found in library' });
+            }
+
+            const csv = await writeToString(games, { headers: true, delimiter: ';' });
+
+            res.header('Content-Type', 'text/csv');
+            res.attachment('library.csv');
+            return res.send(csv);
+        } catch (error) {
+            console.error('Error during generating CSV for user\'s library:', error);
             return res.status(500).json({ message: 'Internal server error' });
         }
     },

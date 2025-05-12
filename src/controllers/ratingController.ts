@@ -12,9 +12,19 @@ const ratingController = {
         try {
             const rating = await prisma.rating.findMany({
                 where: {
-                    game_id: game_id
-                }
-            })
+                    game_id: game_id,
+                },
+                orderBy: {
+                    rate: 'desc',
+                },
+            });
+
+            const ratingCounts: { [key: string]: number } = {};
+
+            rating.forEach(rate => {
+                const rateValue = rate.rate.toString();
+                ratingCounts[rateValue] = (ratingCounts[rateValue] || 0) + 1;
+            });
 
             const formattedRating = rating.map(rate => ({
                 ...rate,
@@ -24,7 +34,8 @@ const ratingController = {
             }));
 
             return res.status(200).json({
-                rating: formattedRating,
+                // rating: formattedRating,
+                ratingCounts
             });
         } catch (error) {
             console.error('Error during getting games ratings:', error);

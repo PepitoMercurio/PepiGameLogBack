@@ -11,6 +11,14 @@ libraryRouter.get('/user/:user_id', async (req: Request, res: Response) => {
     }
 });
 
+libraryRouter.get('/user/:user_id/csv', async (req: Request, res: Response) => {
+    try {
+        await libraryController.downloadLibraryAsCSV(req, res); 
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    }
+});
+
 libraryRouter.post('/add', async (req: Request, res: Response) => {
     try {
         await libraryController.addToLibrary(req, res);

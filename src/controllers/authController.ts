@@ -68,7 +68,7 @@ const authController = {
   },
 
   login: async (req: Request, res: Response) => {
-    const data = req.body;
+    const data = req.body;    
 
     try {
       const user = await prisma.users.findUnique({
